@@ -2,6 +2,8 @@
 
 body {
   font-family: 'Glegoo', serif;
+  margin: 0;
+  overflow: hidden;
 }
 
 header {
@@ -14,7 +16,7 @@ header {
   padding: 0;
   width: 400px;
 
-  background: #F0F0F0;
+  background: rgba(230, 230, 230, 0.7);
   color: #424242;
   border: 1px solid #000;
   border-top: none;;

@@ -39,7 +39,7 @@ class Vector2
 
   
   addX: (value) -> @d[0] += value; this
-  addY: (value) -> @d[0] += value; this
+  addY: (value) -> @d[1] += value; this
 
   x: -> @d[0]
   y: -> @d[1]
@@ -105,22 +105,22 @@ class Boids
 
   avoidCollisions = (boid) ->
     vel = new Vector2
-    points = tree.nearest({x: boid.position.x(), y: boid.position.y()}, 5)
+    points = tree.nearest({x: boid.position.x(), y: boid.position.y()}, 10)
     for p in points
-      b = new Vector2(p.x, p.y)
+      b = new Vector2(p[0].x, p[0].y)
       if b.x() != boid.position.x() and b.y() != boid.position.y()
-        if distance(b, boid.position) < 20
-          console.log "Moving away"
+        dist = distance(b, boid.position)
+        if dist < 50
           vel.substract direction(boid.position, b)
           
     vel
 
-  stayInBounds = (boid, width, height) ->
+  stayInBounds = (boid, lx, ly, hx, hy, p = 2) ->
     vel = new Vector2
-    vel.addX Math.pow(boid.position.x(), 10) if boid.position.x() <= 0
-    vel.addY Math.pow(boid.position.y(), 10) if boid.position.y() <= 0
-    vel.addX -Math.pow(boid.position.x()-width, 10) if boid.position.x() > width
-    vel.addY -Math.pow(boid.position.y()-width, 10) if boid.position.y() > height
+    vel.addX Math.pow(lx - boid.position.x(), p) if boid.position.x() < lx
+    vel.addY Math.pow(ly - boid.position.y(), p) if boid.position.y() < ly
+    vel.addX -Math.pow(hx - boid.position.x(), p) if boid.position.x() > hx
+    vel.addY -Math.pow(hy - boid.position.y(), p) if boid.position.y() > hy
     vel
 
   direction = (from, to) ->
@@ -129,7 +129,7 @@ class Boids
 
   initialize = ->
     lastRun = time()
-    for [1..1000]
+    for [1..50]
       boids.push new Boid(randomUpTo(renderer.width()), randomUpTo(renderer.height()))
 
   update = (delta) ->
@@ -144,19 +144,20 @@ class Boids
     # Update velocities
     for b in boids
       vel = new Vector2
-      vel.add direction(b.position, perceivedCenter(b)).scalarDivide(1000)
-      vel.add avoidCollisions(b).scalarDivide(100)
-      vel.add perceivedFlockVelocity(b)
-      vel.add stayInBounds(b, renderer.width(), renderer.height()).scalarMultiply(5000000)
-      vel.limit(0.2)
-      b.velocity.add vel
-      b.velocity.limit(0.2)
+      vel.add direction(b.position, perceivedCenter(b)).scalarMultiply(1)
+      vel.add avoidCollisions(b).scalarMultiply(1)
+      vel.add perceivedFlockVelocity(b).scalarMultiply(10)
+      vel.add stayInBounds(b, 50, 50, renderer.width() - 50, renderer.height() - 50, 2).scalarMultiply(8)
+      vel.limit(1)
+
+      b.velocity.add vel.scalarMultiply(0.05)
+      b.velocity.limit(1)
 
     # Update position
     for b in boids
       vel = b.velocity.clone()
       #vel.limit(0.4)
-      vel.scalarMultiply(delta)
+      vel.scalarMultiply(delta/5)
       b.position.add vel
 
   run = ->
@@ -164,7 +165,7 @@ class Boids
     lastRun = time()
 
     update(delta)
-    renderer.render(boids.map((b) -> b.position), center)
+    renderer.render(boids, center)
   
   # Public API
   constructor: (render_class) ->
@@ -208,9 +209,16 @@ class Boids2DRenderer
 
     for b in boids
       ctx.beginPath()
-      ctx.arc(b.x(), b.y(), 3, 0, Math.PI*2, true)
+      ctx.arc(b.position.x(), b.position.y(), 3, 0, Math.PI*2, true)
       ctx.stroke()
       ctx.fill()
+      ctx.closePath()
+
+      ctx.beginPath()
+      ctx.moveTo(b.position.x(), b.position.y())
+      ctx.lineTo(b.position.x() - b.velocity.x() * 10, b.position.y() - b.velocity.y() * 10)
+      ctx.stroke()
+      ctx.closePath()
 
     ctx.fillStyle = "red"
     ctx.beginPath()

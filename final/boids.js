@@ -67,7 +67,7 @@
     };
 
     Vector2.prototype.addY = function(value) {
-      this.d[0] += value;
+      this.d[1] += value;
       return this;
     };
 
@@ -189,36 +189,31 @@
     };
 
     avoidCollisions = function(boid) {
-      var b, p, points, vel, _i, _len;
+      var b, dist, p, points, vel, _i, _len;
       vel = new Vector2;
       points = tree.nearest({
         x: boid.position.x(),
         y: boid.position.y()
-      }, 5);
+      }, 10);
       for (_i = 0, _len = points.length; _i < _len; _i++) {
         p = points[_i];
-        b = new Vector2(p.x, p.y);
+        b = new Vector2(p[0].x, p[0].y);
         if (b.x() !== boid.position.x() && b.y() !== boid.position.y()) {
-          if (distance(b, boid.position) < 20) {
-            console.log("Moving away");
-            vel.substract(direction(boid.position, b));
-          }
+          dist = distance(b, boid.position);
+          if (dist < 50) vel.substract(direction(boid.position, b));
         }
       }
       return vel;
     };
 
-    stayInBounds = function(boid, width, height) {
+    stayInBounds = function(boid, lx, ly, hx, hy, p) {
       var vel;
+      if (p == null) p = 2;
       vel = new Vector2;
-      if (boid.position.x() <= 0) vel.addX(Math.pow(boid.position.x(), 10));
-      if (boid.position.y() <= 0) vel.addY(Math.pow(boid.position.y(), 10));
-      if (boid.position.x() > width) {
-        vel.addX(-Math.pow(boid.position.x() - width, 10));
-      }
-      if (boid.position.y() > height) {
-        vel.addY(-Math.pow(boid.position.y() - width, 10));
-      }
+      if (boid.position.x() < lx) vel.addX(Math.pow(lx - boid.position.x(), p));
+      if (boid.position.y() < ly) vel.addY(Math.pow(ly - boid.position.y(), p));
+      if (boid.position.x() > hx) vel.addX(-Math.pow(hx - boid.position.x(), p));
+      if (boid.position.y() > hy) vel.addY(-Math.pow(hy - boid.position.y(), p));
       return vel;
     };
 
@@ -232,7 +227,7 @@
       var _i, _results;
       lastRun = time();
       _results = [];
-      for (_i = 1; _i <= 1000; _i++) {
+      for (_i = 1; _i <= 50; _i++) {
         _results.push(boids.push(new Boid(randomUpTo(renderer.width()), randomUpTo(renderer.height()))));
       }
       return _results;
@@ -252,19 +247,19 @@
       for (_i = 0, _len = boids.length; _i < _len; _i++) {
         b = boids[_i];
         vel = new Vector2;
-        vel.add(direction(b.position, perceivedCenter(b)).scalarDivide(1000));
-        vel.add(avoidCollisions(b).scalarDivide(100));
-        vel.add(perceivedFlockVelocity(b));
-        vel.add(stayInBounds(b, renderer.width(), renderer.height()).scalarMultiply(5000000));
-        vel.limit(0.2);
-        b.velocity.add(vel);
-        b.velocity.limit(0.2);
+        vel.add(direction(b.position, perceivedCenter(b)).scalarMultiply(1));
+        vel.add(avoidCollisions(b).scalarMultiply(1));
+        vel.add(perceivedFlockVelocity(b).scalarMultiply(10));
+        vel.add(stayInBounds(b, 50, 50, renderer.width() - 50, renderer.height() - 50, 2).scalarMultiply(8));
+        vel.limit(1);
+        b.velocity.add(vel.scalarMultiply(0.05));
+        b.velocity.limit(1);
       }
       _results = [];
       for (_j = 0, _len2 = boids.length; _j < _len2; _j++) {
         b = boids[_j];
         vel = b.velocity.clone();
-        vel.scalarMultiply(delta);
+        vel.scalarMultiply(delta / 5);
         _results.push(b.position.add(vel));
       }
       return _results;
@@ -275,9 +270,7 @@
       delta = time() - lastRun;
       lastRun = time();
       update(delta);
-      return renderer.render(boids.map(function(b) {
-        return b.position;
-      }), center);
+      return renderer.render(boids, center);
     };
 
     function Boids(render_class) {
@@ -331,9 +324,15 @@
       for (_i = 0, _len = boids.length; _i < _len; _i++) {
         b = boids[_i];
         ctx.beginPath();
-        ctx.arc(b.x(), b.y(), 3, 0, Math.PI * 2, true);
+        ctx.arc(b.position.x(), b.position.y(), 3, 0, Math.PI * 2, true);
         ctx.stroke();
         ctx.fill();
+        ctx.closePath();
+        ctx.beginPath();
+        ctx.moveTo(b.position.x(), b.position.y());
+        ctx.lineTo(b.position.x() - b.velocity.x() * 10, b.position.y() - b.velocity.y() * 10);
+        ctx.stroke();
+        ctx.closePath();
       }
       ctx.fillStyle = "red";
       ctx.beginPath();
