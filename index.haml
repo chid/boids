@@ -2,11 +2,57 @@
 %head
   %title HTML5 Boids - Bird flocks simulation
   %link{"rel" => "stylesheet", "href" => "style.css", "type" => "text/css"}
+  %link{"rel" => "stylesheet", "href" => "jquery-ui-custom.css", "type" => "text/css"}
   %script{"src" => "https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js", "type" => "text/javascript"}
   %script{"src" => "kdTree.min.js", "type" => "text/javascript"}
+
+  %script{"src" => "jquery-ui-custom.js", "type" => "text/javascript"}
+  %script{"src" => "vector2.js", "type" => "text/javascript"}
+  %script{"src" => "boids2d_renderer.js", "type" => "text/javascript"}
   %script{"src" => "boids.js", "type" => "text/javascript"}
+  %script{"src" => "app.js", "type" => "text/javascript"}
 %body
-  %header
-    %h1 Boids
-    %p#desc HTML5 Bird Flocks Simulation
+  #ui
+    #options
+      %h2 Options
+
+      #controls
+        #simulation-controls.slider-group
+          .slider-box#boids-number
+            .slider
+            .value
+            %label Number of boids
+          .slider-box#simulation-speed
+            .slider
+            .value
+            %label Simulation speed
+          .slider-box#acceleration-weight
+            .slider
+            .value
+            %label Acceleration factor
+
+        #behavior-controls.slider-group
+          .slider-box#position-weight
+            .slider
+            .value
+            %label Average position importance
+          .slider-box#velocity-weight
+            .slider
+            .value
+            %label Average velocity importance
+          .slider-box#collision-weight
+            .slider
+            .value
+            %label Average collision avoidance importance
+
+      #buttons.btn-group
+        .btn#play.active <img src='img/play.png'/> 
+        .btn#pause <img src='img/pause.png'/>
+        .btn#stop <img src='img/stop.png'/>
+    #overhead
+      #options-button <img src='img/options.png'/>
+      %header
+        %h1 Boids
+        %p#desc HTML5 Bird Flocks Simulation
+
   %canvas#sim
