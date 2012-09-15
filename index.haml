@@ -18,32 +18,40 @@
 
       #controls
         #simulation-controls.slider-group
-          .slider-box#boids-number
+          .slider-box.option#boidsNumber
             .slider
             .value
             %label Number of boids
-          .slider-box#simulation-speed
+          .slider-box.option#simulationSpeed
             .slider
             .value
             %label Simulation speed
-          .slider-box#acceleration-weight
+          .slider-box.option#acceleration
             .slider
             .value
             %label Acceleration factor
+          .slider-box.option#flockSize
+            .slider
+            .value
+            %label Flock size
 
         #behavior-controls.slider-group
-          .slider-box#position-weight
+          .slider-box.option#perceivedCenterWeight
             .slider
             .value
             %label Average position importance
-          .slider-box#velocity-weight
+          .slider-box.option#perceivedVelocityWeight
             .slider
             .value
             %label Average velocity importance
-          .slider-box#collision-weight
+          .slider-box.option#collisionAvoidanceWeight
             .slider
             .value
-            %label Average collision avoidance importance
+            %label Collision avoidance importance
+          .slider-box.option#stayInBoundsWeight
+            .slider
+            .value
+            %label Stay in screen importance
 
       #buttons.btn-group
         .btn#play.active <img src='img/play.png'/> 
@@ -54,5 +62,6 @@
       %header
         %h1 Boids
         %p#desc HTML5 Bird Flocks Simulation
+        %p#instruction Click for more info
 
   %canvas#sim

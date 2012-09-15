@@ -19,7 +19,7 @@
   };
 
   this.Boids = (function() {
-    var averagePosition, avoidCollisions, boids, center, direction, distance, initialize, intervalHandle, lastRun, loopInterval, options, perceivedCenter, perceivedFlockVelocity, positionSum, randomUpTo, renderer, run, status, stayInBounds, time, totalPosition, totalVelocity, tree, update, velocitySum;
+    var averagePosition, avoidCollisions, boids, center, direction, distance, initialize, intervalHandle, lastRun, loopInterval, options, perceivedCenter, perceivedFlockVelocity, positionSum, randomUpTo, renderer, run, setBoidsCount, status, stayInBounds, time, totalPosition, totalVelocity, tree, update, velocitySum;
 
     status = null;
 
@@ -117,7 +117,7 @@
       points = tree.nearest({
         x: boid.position.x(),
         y: boid.position.y()
-      }, options['flockSize']);
+      }, Math.min(boids.length, options['flockSize']));
       for (_i = 0, _len = points.length; _i < _len; _i++) {
         p = points[_i];
         b = new Vector2(p[0].x, p[0].y);
@@ -149,14 +149,26 @@
     };
 
     initialize = function() {
-      var _i, _results;
       lastRun = time();
       boids = [];
-      _results = [];
-      for (_i = 1; _i <= 50; _i++) {
-        _results.push(boids.push(new Boid(randomUpTo(renderer.width()), randomUpTo(renderer.height()))));
+      return setBoidsCount(options['boidsNumber']);
+    };
+
+    setBoidsCount = function(number) {
+      var _results;
+      if (number === boids.length) return;
+      if (number > boids.length) {
+        while (number !== boids.length) {
+          boids.push(new Boid(randomUpTo(renderer.width()), randomUpTo(renderer.height())));
+        }
       }
-      return _results;
+      if (number < boids.length) {
+        _results = [];
+        while (number !== boids.length) {
+          _results.push(boids.pop());
+        }
+        return _results;
+      }
     };
 
     update = function(delta) {
@@ -195,6 +207,7 @@
       var delta;
       delta = time() - lastRun;
       lastRun = time();
+      setBoidsCount(options['boidsNumber']);
       update(delta);
       return renderer.render(boids, center);
     };
@@ -207,8 +220,9 @@
 
     Boids.prototype.start = function() {
       console.log("Starting from status " + status);
-      intervalHandle = setInterval(run, loopInterval);
+      if (status === "paused") lastRun = time();
       if (status === "stopped") initialize();
+      intervalHandle = setInterval(run, loopInterval);
       return status = "running";
     };
 

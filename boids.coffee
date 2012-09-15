@@ -69,7 +69,7 @@ class @Boids
 
   avoidCollisions = (boid) ->
     vel = new Vector2
-    points = tree.nearest({x: boid.position.x(), y: boid.position.y()}, options['flockSize'])
+    points = tree.nearest({x: boid.position.x(), y: boid.position.y()}, Math.min(boids.length, options['flockSize']))
     for p in points
       b = new Vector2(p[0].x, p[0].y)
       if b.x() != boid.position.x() and b.y() != boid.position.y()
@@ -94,8 +94,16 @@ class @Boids
   initialize = ->
     lastRun = time()
     boids = []
-    for [1..50]
-      boids.push new Boid(randomUpTo(renderer.width()), randomUpTo(renderer.height()))
+    setBoidsCount(options['boidsNumber'])
+
+  setBoidsCount = (number) ->
+    return if number == boids.length
+    if number > boids.length
+      until number == boids.length
+        boids.push new Boid(randomUpTo(renderer.width()), randomUpTo(renderer.height()))
+    if number < boids.length
+      until number == boids.length
+        boids.pop()
 
   update = (delta) ->
     center = averagePosition()
@@ -129,6 +137,7 @@ class @Boids
     delta = time() - lastRun
     lastRun = time()
 
+    setBoidsCount(options['boidsNumber'])
     update(delta)
     renderer.render(boids, center)
   
@@ -140,8 +149,10 @@ class @Boids
 
   start: ->
     console.log("Starting from status #{status}")
-    intervalHandle = setInterval(run, loopInterval)
+    lastRun = time() if status == "paused"
     initialize() if status == "stopped"
+
+    intervalHandle = setInterval(run, loopInterval)
     status = "running"
 
   pause: ->

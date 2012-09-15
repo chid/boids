@@ -17,37 +17,47 @@
       <h2>Options</h2>
       <div id='controls'>
         <div class='slider-group' id='simulation-controls'>
-          <div class='slider-box' id='boids-number'>
+          <div class='slider-box option' id='boidsNumber'>
             <div class='slider'></div>
             <div class='value'></div>
             <label>Number of boids</label>
           </div>
-          <div class='slider-box' id='simulation-speed'>
+          <div class='slider-box option' id='simulationSpeed'>
             <div class='slider'></div>
             <div class='value'></div>
             <label>Simulation speed</label>
           </div>
-          <div class='slider-box' id='acceleration-weight'>
+          <div class='slider-box option' id='acceleration'>
             <div class='slider'></div>
             <div class='value'></div>
             <label>Acceleration factor</label>
           </div>
+          <div class='slider-box option' id='flockSize'>
+            <div class='slider'></div>
+            <div class='value'></div>
+            <label>Flock size</label>
+          </div>
         </div>
         <div class='slider-group' id='behavior-controls'>
-          <div class='slider-box' id='position-weight'>
+          <div class='slider-box option' id='perceivedCenterWeight'>
             <div class='slider'></div>
             <div class='value'></div>
             <label>Average position importance</label>
           </div>
-          <div class='slider-box' id='velocity-weight'>
+          <div class='slider-box option' id='perceivedVelocityWeight'>
             <div class='slider'></div>
             <div class='value'></div>
             <label>Average velocity importance</label>
           </div>
-          <div class='slider-box' id='collision-weight'>
+          <div class='slider-box option' id='collisionAvoidanceWeight'>
             <div class='slider'></div>
             <div class='value'></div>
-            <label>Average collision avoidance importance</label>
+            <label>Collision avoidance importance</label>
+          </div>
+          <div class='slider-box option' id='stayInBoundsWeight'>
+            <div class='slider'></div>
+            <div class='value'></div>
+            <label>Stay in screen importance</label>
           </div>
         </div>
       </div>
@@ -62,6 +72,7 @@
       <header>
         <h1>Boids</h1>
         <p id='desc'>HTML5 Bird Flocks Simulation</p>
+        <p id='instruction'>Click for more info</p>
       </header>
     </div>
   </div>
