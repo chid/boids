@@ -4,6 +4,7 @@
   $(document).ready(function() {
     window.renderer = new Boids2DRenderer($("canvas")[0]);
     window.boids = new Boids(window.renderer);
+    window.boids.start();
     displayOnButtonClick("#options-button", "#options", "#info");
     displayOnButtonClick("header", "#info", "#options");
     $("header").hover(function() {
