@@ -1,10 +1,10 @@
 (function() {
-  var displayOnButtonClick, initializeCheckboxes, initializeSliders, rand, setActiveButton, setOption, sliderArguments;
+  var displayOnButtonClick, initializeCheckboxes, initializeSliders, setActiveButton, setOption, sliderArguments;
 
   $(document).ready(function() {
     window.renderer = new Boids2DRenderer($("canvas")[0]);
-    window.simulator = new Boids(window.renderer);
-    window.simulator.start();
+    window.simulation = new Boids(window.renderer);
+    window.simulation.start();
     displayOnButtonClick("#options-button", "#options", "#info");
     displayOnButtonClick("header", "#info", "#options");
     $("header").hover(function() {
@@ -13,16 +13,29 @@
       return $("#instruction").slideUp(500);
     });
     $("#play").click(function() {
-      window.simulator.start();
+      window.simulation.start();
       return setActiveButton("play");
     });
     $("#pause").click(function() {
-      window.simulator.pause();
+      window.simulation.pause();
       return setActiveButton("pause");
     });
     $("#stop").click(function() {
-      window.simulator.stop();
+      window.simulation.stop();
       return setActiveButton("stop");
+    });
+    window.goalSet = false;
+    $("#sim").click(function(e) {
+      if (window.goalSet) {
+        window.simulation.unsetGoal();
+        return window.goalSet = false;
+      } else {
+        window.simulation.setGoal(e.pageX, e.pageY);
+        return window.goalSet = true;
+      }
+    });
+    $("#sim").mousemove(function(e) {
+      if (window.clicking) return window.simulation.setGoal(e.pageX, e.pageY);
     });
     initializeCheckboxes();
     initializeSliders();
@@ -67,7 +80,7 @@
     if (min == null) min = 0;
     if (max == null) max = 20;
     if (step == null) step = 1;
-    value = window.simulator.get(option);
+    value = window.simulation.get(option);
     setOption(option, value);
     return {
       value: value,
@@ -81,7 +94,7 @@
   };
 
   setOption = function(option, value) {
-    window.simulator.set(option, value);
+    window.simulation.set(option, value);
     $("#" + option + " > .value").html(value);
     if (value === 0) {
       return $("#" + option + " > .value").addClass('zero');
@@ -104,30 +117,6 @@
       }));
     }
     return _results;
-  };
-
-  rand = function(l) {
-    if (l == null) l = 100;
-    return Math.floor(Math.random() * l);
-  };
-
-  window.testKDTree = function() {
-    var arr, i, j, tree, x, _i, _len;
-    arr = [];
-    tree = new window.KDTree();
-    for (i = 1; i <= 10; i++) {
-      for (j = 1; j <= 10; j++) {
-        arr.push({
-          x: i,
-          y: j
-        });
-      }
-    }
-    for (_i = 0, _len = arr.length; _i < _len; _i++) {
-      x = arr[_i];
-      tree.add(x);
-    }
-    return tree;
   };
 
 }).call(this);

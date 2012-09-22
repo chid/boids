@@ -2,8 +2,8 @@
 
 $(document).ready ->
   window.renderer = new Boids2DRenderer($("canvas")[0])
-  window.simulator = new Boids(window.renderer)
-  window.simulator.start()
+  window.simulation = new Boids(window.renderer)
+  window.simulation.start()
 
   
   displayOnButtonClick("#options-button", "#options", "#info")
@@ -17,14 +17,28 @@ $(document).ready ->
 
 
   $("#play").click -> 
-    window.simulator.start()
+    window.simulation.start()
     setActiveButton("play")
   $("#pause").click ->
-    window.simulator.pause()
+    window.simulation.pause()
     setActiveButton("pause")
   $("#stop").click ->
-    window.simulator.stop()
+    window.simulation.stop()
     setActiveButton("stop")
+
+  window.goalSet = false
+  $("#sim").click (e) ->
+    if window.goalSet
+      window.simulation.unsetGoal()
+      window.goalSet = false
+    else
+      window.simulation.setGoal(e.pageX, e.pageY)
+      window.goalSet = true
+
+  $("#sim").mousemove (e) ->
+    window.simulation.setGoal(e.pageX, e.pageY) if window.clicking
+    
+
 
   initializeCheckboxes()
   initializeSliders()
@@ -54,7 +68,7 @@ initializeSliders = ->
     $("##{option} > .slider").slider sliderArguments(option)
 
 sliderArguments = (option, min = 0, max = 20, step = 1) ->
-  value = window.simulator.get(option)
+  value = window.simulation.get(option)
   setOption(option, value)
   value: value
   min: min
@@ -63,7 +77,7 @@ sliderArguments = (option, min = 0, max = 20, step = 1) ->
   slide: (event, ui) -> setOption(option, ui.value) 
 
 setOption = (option, value) ->
-  window.simulator.set(option, value)
+  window.simulation.set(option, value)
   $("##{option} > .value").html(value)
   if value == 0
     $("##{option} > .value").addClass('zero')
@@ -78,12 +92,4 @@ initializeCheckboxes = ->
     $("##{option} > input").prop("checked", window.renderer.get(option))
     $("##{option} > input").change -> window.renderer.set($(this).parent().attr('id'), $(this).is(":checked"))
 
-rand = (l = 100) -> Math.floor(Math.random() * l)
 
-window.testKDTree = ->
-  arr = []; tree = new window.KDTree()
-  for i in [1..10]
-    for j in [1..10]
-      arr.push {x: i, y: j}
-  tree.add(x) for x in arr
-  tree

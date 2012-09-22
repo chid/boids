@@ -96,6 +96,7 @@ class @Boids
   initialize: ->
     lastRun = time()
     @boids = []
+    @goal = null
     @setBoidsCount(options['boidsNumber'])
 
   setBoidsCount: (number) ->
@@ -123,6 +124,8 @@ class @Boids
       vel.add @avoidCollisions(b).scalarMultiply(options['collisionAvoidanceWeight'])
       vel.add @perceivedFlockVelocity(b).scalarMultiply(options['perceivedVelocityWeight'])
       vel.add @stayInBounds(b, 50, 50, @renderer.width() - 50, @renderer.height() - 50, options['stayInBoundsPower']).scalarMultiply(options['stayInBoundsWeight'])
+      vel.add @direction(b.position, @goal).scalarMultiply(5) if @goal
+
       vel.limit(1)
 
       b.velocity.add vel.scalarMultiply(options['acceleration']/100)
@@ -141,7 +144,7 @@ class @Boids
 
     @setBoidsCount(options['boidsNumber'])
     @update(delta)
-    @renderer.render(@boids, center)
+    @renderer.render(@boids, center, @goal)
   
   # Public API
   constructor: (render_class) ->
@@ -165,6 +168,12 @@ class @Boids
     window.clearInterval(@intervalHandle)
     @renderer.clearScreen()
     @status = "stopped"
+
+  setGoal: (x, y) ->
+    @goal = new Vector2(x, y)
+
+  unsetGoal: () ->
+    @goal = null
 
   get: (option) -> options[option]
   set: (option, value) -> options[option] = value

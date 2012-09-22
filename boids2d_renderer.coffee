@@ -20,8 +20,9 @@ class @Boids2DRenderer
     
   clearScreen: -> ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-  render: (boids, center) ->
+  render: (boids, center, goal) ->
     ctx.fillStyle = "black"
+    ctx.strokeStyle = "#333"
     @clearScreen()
 
     for b in boids
@@ -44,6 +45,15 @@ class @Boids2DRenderer
       ctx.arc(center.x(), center.y(), 3, 0, Math.PI*2, true)
       ctx.stroke()
       ctx.fill()
+
+    if goal
+      ctx.fillStyle = "rgba(230, 230, 55, 0.5)"
+      ctx.strokeStyle = "#F0C44D"
+      ctx.beginPath()
+      ctx.arc(goal.x(), goal.y(), 10, 0, Math.PI*2, true)
+      ctx.stroke()
+      ctx.fill()
+
   
   width: -> canvas.width
   height: -> canvas.height

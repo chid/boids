@@ -27,9 +27,10 @@
       return ctx.clearRect(0, 0, canvas.width, canvas.height);
     };
 
-    Boids2DRenderer.prototype.render = function(boids, center) {
+    Boids2DRenderer.prototype.render = function(boids, center, goal) {
       var b, _i, _len;
       ctx.fillStyle = "black";
+      ctx.strokeStyle = "#333";
       this.clearScreen();
       for (_i = 0, _len = boids.length; _i < _len; _i++) {
         b = boids[_i];
@@ -50,6 +51,14 @@
         ctx.fillStyle = "red";
         ctx.beginPath();
         ctx.arc(center.x(), center.y(), 3, 0, Math.PI * 2, true);
+        ctx.stroke();
+        ctx.fill();
+      }
+      if (goal) {
+        ctx.fillStyle = "rgba(230, 230, 55, 0.5)";
+        ctx.strokeStyle = "#F0C44D";
+        ctx.beginPath();
+        ctx.arc(goal.x(), goal.y(), 10, 0, Math.PI * 2, true);
         ctx.stroke();
         return ctx.fill();
       }

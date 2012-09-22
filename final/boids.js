@@ -167,6 +167,7 @@
     Boids.prototype.initialize = function() {
       lastRun = time();
       this.boids = [];
+      this.goal = null;
       return this.setBoidsCount(options['boidsNumber']);
     };
 
@@ -207,6 +208,9 @@
         vel.add(this.avoidCollisions(b).scalarMultiply(options['collisionAvoidanceWeight']));
         vel.add(this.perceivedFlockVelocity(b).scalarMultiply(options['perceivedVelocityWeight']));
         vel.add(this.stayInBounds(b, 50, 50, this.renderer.width() - 50, this.renderer.height() - 50, options['stayInBoundsPower']).scalarMultiply(options['stayInBoundsWeight']));
+        if (this.goal) {
+          vel.add(this.direction(b.position, this.goal).scalarMultiply(5));
+        }
         vel.limit(1);
         b.velocity.add(vel.scalarMultiply(options['acceleration'] / 100));
         b.velocity.limit(1);
@@ -228,7 +232,7 @@
       lastRun = time();
       this.setBoidsCount(options['boidsNumber']);
       this.update(delta);
-      return this.renderer.render(this.boids, center);
+      return this.renderer.render(this.boids, center, this.goal);
     };
 
     function Boids(render_class) {
@@ -254,6 +258,14 @@
       window.clearInterval(this.intervalHandle);
       this.renderer.clearScreen();
       return this.status = "stopped";
+    };
+
+    Boids.prototype.setGoal = function(x, y) {
+      return this.goal = new Vector2(x, y);
+    };
+
+    Boids.prototype.unsetGoal = function() {
+      return this.goal = null;
     };
 
     Boids.prototype.get = function(option) {
