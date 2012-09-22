@@ -6,6 +6,15 @@ body {
   overflow: hidden;
 }
 
+a {
+  color: #0079AD;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
 #ui {
   position: absolute;
   top: 0px;
@@ -64,14 +73,27 @@ canvas {
   z-index: -1;
 }
 
-#options {
+#options, #info {
   display: none;
+  text-align: center;
   border-bottom: 1px solid #000;
   background: rgba(230, 230, 230, 0.7);
   color: #333;
   padding: 10px 10px;
 
   h2 {
+    text-align: center;
+  }
+}
+
+#about {
+  width: 800px;
+  max-height: 800px;
+  overflow: scroll;
+  text-align: left;
+  margin: 0 auto;
+
+  .center, h2, h3{
     text-align: center;
   }
 }

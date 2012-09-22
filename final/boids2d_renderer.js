@@ -1,20 +1,26 @@
 (function() {
 
   this.Boids2DRenderer = (function() {
-    var canvas, ctx;
+    var canvas, ctx, getContext, options;
 
     canvas = null;
 
     ctx = null;
 
-    function Boids2DRenderer(el) {
-      var radius;
-      canvas = el;
+    options = {
+      showVelocityVectors: true,
+      showAveragePosition: false
+    };
+
+    getContext = function() {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
-      ctx = canvas.getContext('2d');
-      radius = 3;
-      console.log("Running render at " + canvas.width + "x" + canvas.height);
+      return ctx = canvas.getContext('2d');
+    };
+
+    function Boids2DRenderer(el) {
+      canvas = el;
+      getContext();
     }
 
     Boids2DRenderer.prototype.clearScreen = function() {
@@ -32,17 +38,21 @@
         ctx.stroke();
         ctx.fill();
         ctx.closePath();
-        ctx.beginPath();
-        ctx.moveTo(b.position.x(), b.position.y());
-        ctx.lineTo(b.position.x() - b.velocity.x() * 10, b.position.y() - b.velocity.y() * 10);
-        ctx.stroke();
-        ctx.closePath();
+        if (options['showVelocityVectors']) {
+          ctx.beginPath();
+          ctx.moveTo(b.position.x(), b.position.y());
+          ctx.lineTo(b.position.x() - b.velocity.x() * 10, b.position.y() - b.velocity.y() * 10);
+          ctx.stroke();
+          ctx.closePath();
+        }
       }
-      ctx.fillStyle = "red";
-      ctx.beginPath();
-      ctx.arc(center.x(), center.y(), 3, 0, Math.PI * 2, true);
-      ctx.stroke();
-      return ctx.fill();
+      if (options['showAveragePosition']) {
+        ctx.fillStyle = "red";
+        ctx.beginPath();
+        ctx.arc(center.x(), center.y(), 3, 0, Math.PI * 2, true);
+        ctx.stroke();
+        return ctx.fill();
+      }
     };
 
     Boids2DRenderer.prototype.width = function() {
@@ -51,6 +61,19 @@
 
     Boids2DRenderer.prototype.height = function() {
       return canvas.height;
+    };
+
+    Boids2DRenderer.prototype.handleResize = function() {
+      return getContext();
+    };
+
+    Boids2DRenderer.prototype.get = function(option) {
+      return options[option];
+    };
+
+    Boids2DRenderer.prototype.set = function(option, value) {
+      console.log("" + option + " = " + value);
+      return options[option] = value;
     };
 
     return Boids2DRenderer;

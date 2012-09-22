@@ -4,8 +4,9 @@
   %link{"rel" => "stylesheet", "href" => "style.css", "type" => "text/css"}
   %link{"rel" => "stylesheet", "href" => "jquery-ui-custom.css", "type" => "text/css"}
   %script{"src" => "https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js", "type" => "text/javascript"}
-  %script{"src" => "kdTree.min.js", "type" => "text/javascript"}
 
+  %script{"src" => "kd-tree.js", "type" => "text/javascript"}
+  %script{"src" => "heap.js", "type" => "text/javascript"}
   %script{"src" => "jquery-ui-custom.js", "type" => "text/javascript"}
   %script{"src" => "vector2.js", "type" => "text/javascript"}
   %script{"src" => "boids2d_renderer.js", "type" => "text/javascript"}
@@ -53,10 +54,45 @@
             .value
             %label Stay in screen importance
 
+      #checkboxes
+        .checkbox#showAveragePosition
+          %input{type: "checkbox"}
+          %label Show average position
+        .checkbox#showVelocityVectors
+          %input{type: "checkbox"}
+          %label Show velocity vectors
+
       #buttons.btn-group
         .btn#play.active <img src='img/play.png'/> 
         .btn#pause <img src='img/pause.png'/>
         .btn#stop <img src='img/stop.png'/>
+    #info
+      #about
+        :markdown
+          ## HTML5 Boids
+          <p class='center'>An HTML5 implementation of the <a href='http://www.red3d.com/cwr/boids/'>boids model</a> of coordinated animal motion.</p>
+
+          ### The model
+          *Boids* is a computer model of *coordinated animal motion* such as bird flocks and fish schools. The model consists of three simple rules that describe how an individual boid moves based on the positions and velocities of its nearby boids:
+
+          1. **Collision avoidance**: point away from the k nearest boids.
+          2. **Flock centering**: point towards the perceived center of mass of the k nearest boids.
+          3. **Velocity matching**: update velocity to the average of the k nearest boids.
+
+          Note that this implementation is a little different from the [original model](http://www.red3d.com/cwr/boids/), and doesn't aim to recreate the exact same behavior. This aims to be a beautiful HTML5 visualization of the model that is configurable and performs well with as many boids as possible. The code is [open-source](https://github.com/tech_no_crat/boids) and hopefully, easy to read and tweak.
+
+          ### The implementation
+          It's all written in [coffeescript](http://coffeescript.org/), a beautiful little language that compiles into javascript. To improve performance, I used a kd-tree that allows for quick queries of the type "what are the K nearest points to point P". ~~The kd-tree implementation is also written in coffeescript~~. The code is on [github](https://github.com/tech_no_crat/boids).
+
+          ### Tweaking
+          You can configure the simulation to some extend without touching the code or leaving your browser. Click on the option button to the right and you will be presented with certain configuration options that can significantly alter the boids' behavior. Here's a more detailed explanation of the sliders:
+
+          - **Number of boids**: The number of boids on the screen. Decreasing this can obviously improve performance significantly.
+          - **Simulation speed**: Increasing this value too much can result in decreased accuracy.
+          - **Acceleration factor**: How fast the boids can accelerate. Increasing this will make the boids behave more like fish.
+          - **Flock size**: The number of neighboors boids will consider to calculate the center of mass and flock velocity.
+          - **Importance factors**: Each of the four rules (three from the model, and an additional rule to keep the boids in the screen) has an associated weight. The higher the weight, the more important the rule is considered.
+
     #overhead
       #options-button <img src='img/options.png'/>
       %header

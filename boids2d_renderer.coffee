@@ -2,17 +2,21 @@ class @Boids2DRenderer
   # Instance variables
   canvas = null
   ctx = null
+  options =
+    showVelocityVectors: true
+    showAveragePosition: false
 
   # Private methods
+ 
+  getContext = ->
+    canvas.width = window.innerWidth
+    canvas.height = window.innerHeight
+    ctx = canvas.getContext('2d')
 
   # Public API
   constructor: (el) ->
     canvas = el
-    canvas.width = window.innerWidth
-    canvas.height = window.innerHeight
-    ctx = canvas.getContext('2d')
-    radius = 3
-    console.log("Running render at #{canvas.width}x#{canvas.height}")
+    getContext()
     
   clearScreen: -> ctx.clearRect(0, 0, canvas.width, canvas.height)
 
@@ -27,19 +31,26 @@ class @Boids2DRenderer
       ctx.fill()
       ctx.closePath()
 
-      ctx.beginPath()
-      ctx.moveTo(b.position.x(), b.position.y())
-      ctx.lineTo(b.position.x() - b.velocity.x() * 10, b.position.y() - b.velocity.y() * 10)
-      ctx.stroke()
-      ctx.closePath()
+      if options['showVelocityVectors']
+        ctx.beginPath()
+        ctx.moveTo(b.position.x(), b.position.y())
+        ctx.lineTo(b.position.x() - b.velocity.x() * 10, b.position.y() - b.velocity.y() * 10)
+        ctx.stroke()
+        ctx.closePath()
 
-    ctx.fillStyle = "red"
-    ctx.beginPath()
-    ctx.arc(center.x(), center.y(), 3, 0, Math.PI*2, true)
-    ctx.stroke()
-    ctx.fill()
+    if options['showAveragePosition']
+      ctx.fillStyle = "red"
+      ctx.beginPath()
+      ctx.arc(center.x(), center.y(), 3, 0, Math.PI*2, true)
+      ctx.stroke()
+      ctx.fill()
   
   width: -> canvas.width
-
   height: -> canvas.height
+
+  handleResize: -> getContext()
+
+
+  get: (option) -> options[option]
+  set: (option, value) -> console.log "#{option} = #{value}"; options[option] = value
 

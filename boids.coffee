@@ -21,12 +21,12 @@ class @Boids
   totalVelocity = null
   tree = null
   options =
-    simulationSpeed: 5
-    boidsNumber: 50
-    acceleration: 4
-    perceivedCenterWeight: 1
+    simulationSpeed: 15
+    boidsNumber: 100
+    acceleration: 2
+    perceivedCenterWeight: 10
     perceivedVelocityWeight: 10
-    collisionAvoidanceWeight: 1
+    collisionAvoidanceWeight: 5
     stayInBoundsWeight: 8
     flockSize: 10
     minCollisionAvoidanceDistance: 50
@@ -49,14 +49,20 @@ class @Boids
     sum
 
   perceivedFlockVelocity = (boid) ->
-    sum = totalVelocity.clone()
-    sum.substract boid.velocity
-    sum.scalarDivide(boids.length - 1)
+    sum = new Vector2
+    points = tree.nearest({x: boid.position.x(), y: boid.position.y()}, Math.min(boids.length, options['flockSize']))
+    for p in points
+      pos = new Vector2(p.x, p.y)
+      sum.add p.velocity unless pos.x() == boid.position.x() and pos.y() == boid.position.y()
+    sum.scalarDivide(points.length - 1)
 
   perceivedCenter = (boid) ->
-    sum = totalPosition.clone()
-    sum.substract boid.position
-    sum.scalarDivide(boids.length - 1)
+    sum = new Vector2
+    points = tree.nearest({x: boid.position.x(), y: boid.position.y()}, Math.min(boids.length, options['flockSize']))
+    for p in points
+      pos = new Vector2(p.x, p.y)
+      sum.add pos unless pos.x() == boid.position.x() and pos.y() == boid.position.y()
+    sum.scalarDivide(points.length - 1)
 
   averagePosition = ->
     sum = new Vector2
@@ -71,7 +77,7 @@ class @Boids
     vel = new Vector2
     points = tree.nearest({x: boid.position.x(), y: boid.position.y()}, Math.min(boids.length, options['flockSize']))
     for p in points
-      b = new Vector2(p[0].x, p[0].y)
+      b = new Vector2(p.x, p.y)
       if b.x() != boid.position.x() and b.y() != boid.position.y()
         dist = distance(b, boid.position)
         if dist < options['minCollisionAvoidanceDistance']
@@ -110,9 +116,9 @@ class @Boids
     totalPosition = positionSum()
     totalVelocity = velocitySum()
     
-    tree = new kdTree(boids.map( (b) ->
-      {x: b.position.x(), y: b.position.y()}
-    ) , window.dist, ["x", "y"])
+    tree = new KDTree(boids.map( (b) ->
+      {x: b.position.x(), y: b.position.y(), velocity: b.velocity}
+    ))
 
     # Update velocities
     for b in boids
@@ -130,7 +136,7 @@ class @Boids
     for b in boids
       vel = b.velocity.clone()
       #vel.limit(0.4)
-      vel.scalarMultiply(delta/(10-options['simulationSpeed']+1))
+      vel.scalarMultiply(delta/(20-options['simulationSpeed']+1))
       b.position.add vel
 
   run = ->
@@ -166,3 +172,4 @@ class @Boids
 
   get: (option) -> options[option]
   set: (option, value) -> options[option] = value
+  

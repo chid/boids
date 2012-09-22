@@ -4,6 +4,12 @@ body {
   margin: 0;
   overflow: hidden; }
 
+a {
+  color: #0079AD;
+  text-decoration: none; }
+  a:hover {
+    text-decoration: underline; }
+
 #ui {
   position: absolute;
   top: 0px;
@@ -47,13 +53,23 @@ canvas {
   height: 100%;
   z-index: -1; }
 
-#options {
+#options, #info {
   display: none;
+  text-align: center;
   border-bottom: 1px solid #000;
   background: rgba(230, 230, 230, 0.7);
   color: #333;
   padding: 10px 10px; }
-  #options h2 {
+  #options h2, #info h2 {
+    text-align: center; }
+
+#about {
+  width: 800px;
+  max-height: 800px;
+  overflow: scroll;
+  text-align: left;
+  margin: 0 auto; }
+  #about .center, #about h2, #about h3 {
     text-align: center; }
 
 #options-button {

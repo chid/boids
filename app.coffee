@@ -1,14 +1,13 @@
 # Contains code that makes use of jquery to interact with the user, manage the UI and start the application.
 
 $(document).ready ->
-  window.boids = new Boids(new Boids2DRenderer($("canvas")[0]))
-  window.boids.start()
+  window.renderer = new Boids2DRenderer($("canvas")[0])
+  window.boids = new Boids(window.renderer)
+  #window.boids.start()
 
-  $("#options-button").click ->
-    if $("#options").is(':visible')
-      $("#options").slideUp(1000)
-    else
-      $("#options").slideDown(1000)
+  
+  displayOnButtonClick("#options-button", "#options", "#info")
+  displayOnButtonClick("header", "#info", "#options")
 
   $("header").hover( ->
       $("#instruction").slideDown(500)
@@ -27,7 +26,19 @@ $(document).ready ->
     window.boids.stop()
     setActiveButton("stop")
 
+  initializeCheckboxes()
   initializeSliders()
+
+  $(window).resize -> window.renderer.handleResize()
+
+displayOnButtonClick = (button, div, hide) ->
+  $("#{button}").click ->
+    if hide
+      $("#{hide}").slideUp(1000) if $("#{hide}").is(":visible")
+    if $("#{div}").is(':visible')
+      $("#{div}").slideUp(1000)
+    else
+      $("#{div}").slideDown(1000)
 
 setActiveButton = (btn) ->
   $("#play").removeClass("active")
@@ -42,7 +53,7 @@ initializeSliders = ->
   for option in options
     $("##{option} > .slider").slider sliderArguments(option)
 
-sliderArguments = (option, min = 0, max = 10, step = 1) ->
+sliderArguments = (option, min = 0, max = 20, step = 1) ->
   value = window.boids.get(option)
   setOption(option, value)
   value: value
@@ -58,3 +69,21 @@ setOption = (option, value) ->
     $("##{option} > .value").addClass('zero')
   else
     $("##{option} > .value").removeClass('zero')
+
+initializeCheckboxes = ->
+  options = ["showAveragePosition", "showVelocityVectors"]
+  for option in options
+    console.log option
+    console.log window.renderer.get(option)
+    $("##{option} > input").prop("checked", window.renderer.get(option))
+    $("##{option} > input").change -> window.renderer.set($(this).parent().attr('id'), $(this).is(":checked"))
+
+rand = (l = 100) -> Math.floor(Math.random() * l)
+
+window.testKDTree = ->
+  arr = []; tree = new window.KDTree()
+  for i in [1..10]
+    for j in [1..10]
+      arr.push {x: i, y: j}
+  tree.add(x) for x in arr
+  tree

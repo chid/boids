@@ -42,12 +42,12 @@
     tree = null;
 
     options = {
-      simulationSpeed: 5,
-      boidsNumber: 50,
-      acceleration: 4,
-      perceivedCenterWeight: 1,
+      simulationSpeed: 15,
+      boidsNumber: 100,
+      acceleration: 2,
+      perceivedCenterWeight: 10,
       perceivedVelocityWeight: 10,
-      collisionAvoidanceWeight: 1,
+      collisionAvoidanceWeight: 5,
       stayInBoundsWeight: 8,
       flockSize: 10,
       minCollisionAvoidanceDistance: 50,
@@ -83,17 +83,37 @@
     };
 
     perceivedFlockVelocity = function(boid) {
-      var sum;
-      sum = totalVelocity.clone();
-      sum.substract(boid.velocity);
-      return sum.scalarDivide(boids.length - 1);
+      var p, points, pos, sum, _i, _len;
+      sum = new Vector2;
+      points = tree.nearest({
+        x: boid.position.x(),
+        y: boid.position.y()
+      }, Math.min(boids.length, options['flockSize']));
+      for (_i = 0, _len = points.length; _i < _len; _i++) {
+        p = points[_i];
+        pos = new Vector2(p.x, p.y);
+        if (!(pos.x() === boid.position.x() && pos.y() === boid.position.y())) {
+          sum.add(p.velocity);
+        }
+      }
+      return sum.scalarDivide(points.length - 1);
     };
 
     perceivedCenter = function(boid) {
-      var sum;
-      sum = totalPosition.clone();
-      sum.substract(boid.position);
-      return sum.scalarDivide(boids.length - 1);
+      var p, points, pos, sum, _i, _len;
+      sum = new Vector2;
+      points = tree.nearest({
+        x: boid.position.x(),
+        y: boid.position.y()
+      }, Math.min(boids.length, options['flockSize']));
+      for (_i = 0, _len = points.length; _i < _len; _i++) {
+        p = points[_i];
+        pos = new Vector2(p.x, p.y);
+        if (!(pos.x() === boid.position.x() && pos.y() === boid.position.y())) {
+          sum.add(pos);
+        }
+      }
+      return sum.scalarDivide(points.length - 1);
     };
 
     averagePosition = function() {
@@ -120,7 +140,7 @@
       }, Math.min(boids.length, options['flockSize']));
       for (_i = 0, _len = points.length; _i < _len; _i++) {
         p = points[_i];
-        b = new Vector2(p[0].x, p[0].y);
+        b = new Vector2(p.x, p.y);
         if (b.x() !== boid.position.x() && b.y() !== boid.position.y()) {
           dist = distance(b, boid.position);
           if (dist < options['minCollisionAvoidanceDistance']) {
@@ -176,12 +196,13 @@
       center = averagePosition();
       totalPosition = positionSum();
       totalVelocity = velocitySum();
-      tree = new kdTree(boids.map(function(b) {
+      tree = new KDTree(boids.map(function(b) {
         return {
           x: b.position.x(),
-          y: b.position.y()
+          y: b.position.y(),
+          velocity: b.velocity
         };
-      }), window.dist, ["x", "y"]);
+      }));
       for (_i = 0, _len = boids.length; _i < _len; _i++) {
         b = boids[_i];
         vel = new Vector2;
@@ -197,7 +218,7 @@
       for (_j = 0, _len2 = boids.length; _j < _len2; _j++) {
         b = boids[_j];
         vel = b.velocity.clone();
-        vel.scalarMultiply(delta / (10 - options['simulationSpeed'] + 1));
+        vel.scalarMultiply(delta / (20 - options['simulationSpeed'] + 1));
         _results.push(b.position.add(vel));
       }
       return _results;
