@@ -84,8 +84,10 @@
 
           Note that this implementation is a little different from the [original model](http://www.red3d.com/cwr/boids/), and doesn't aim to recreate the exact same behavior. This aims to be an HTML5 visualization of the model that is configurable and performs well with as many boids as possible. The code is [open-source](https://github.com/tech_no_crat/boids) and hopefully, easy to read and tweak.
 
+          The original model was developed by [Craig Reynolds](http://www.red3d.com/cwr/index.html).
+
           ### The implementation
-          It's all written in [coffeescript](http://coffeescript.org/), a language that compiles into javascript. To improve performance, I used a kd-tree for answering queries of the type "what are the K nearest points to point P". The kd-tree implementation is also written in coffeescript. The code is on [github](https://github.com/tech_no_crat/boids).
+          It's all written in [coffeescript](http://coffeescript.org/), a language that compiles into javascript. To improve performance, I used a kd-tree for answering queries of the type "what are the K nearest points to point P". The kd-tree and the binary heap it requires are also written in coffeescript. The code is on [github](https://github.com/tech_no_crat/boids).
 
           ### Tweaking
           You can configure the simulation to some extend without touching the code or leaving your browser. Click on the option button to the right and you will be presented with certain configuration options that can significantly alter the boids' behavior. Here's a more detailed explanation of the sliders:
