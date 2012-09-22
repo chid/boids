@@ -2,8 +2,8 @@
 
 $(document).ready ->
   window.renderer = new Boids2DRenderer($("canvas")[0])
-  window.boids = new Boids(window.renderer)
-  window.boids.start()
+  window.simulator = new Boids(window.renderer)
+  window.simulator.start()
 
   
   displayOnButtonClick("#options-button", "#options", "#info")
@@ -17,13 +17,13 @@ $(document).ready ->
 
 
   $("#play").click -> 
-    window.boids.start()
+    window.simulator.start()
     setActiveButton("play")
   $("#pause").click ->
-    window.boids.pause()
+    window.simulator.pause()
     setActiveButton("pause")
   $("#stop").click ->
-    window.boids.stop()
+    window.simulator.stop()
     setActiveButton("stop")
 
   initializeCheckboxes()
@@ -54,7 +54,7 @@ initializeSliders = ->
     $("##{option} > .slider").slider sliderArguments(option)
 
 sliderArguments = (option, min = 0, max = 20, step = 1) ->
-  value = window.boids.get(option)
+  value = window.simulator.get(option)
   setOption(option, value)
   value: value
   min: min
@@ -63,7 +63,7 @@ sliderArguments = (option, min = 0, max = 20, step = 1) ->
   slide: (event, ui) -> setOption(option, ui.value) 
 
 setOption = (option, value) ->
-  window.boids.set(option, value)
+  window.simulator.set(option, value)
   $("##{option} > .value").html(value)
   if value == 0
     $("##{option} > .value").addClass('zero')

@@ -81,7 +81,7 @@
     <div id='info'>
       <div id='about'>
         <h2 id='html5_boids'>HTML5 Boids</h2>
-        <p class='center'>An HTML5 implementation of the <a href='http://www.red3d.com/cwr/boids/'>boids model</a> of coordinated animal motion.</p>
+        <p class='center'>HTML5 implementation of the <a href='http://www.red3d.com/cwr/boids/'>boids model</a> of coordinated animal motion.</p>
         <h3 id='the_model'>The model</h3>
         
         <p><em>Boids</em> is a computer model of <em>coordinated animal motion</em> such as bird flocks and fish schools. The model consists of three simple rules that describe how an individual boid moves based on the positions and velocities of its nearby boids:</p>
@@ -94,22 +94,22 @@
         <li><strong>Velocity matching</strong>: update velocity to the average of the k nearest boids.</li>
         </ol>
         
-        <p>Note that this implementation is a little different from the <a href='http://www.red3d.com/cwr/boids/'>original model</a>, and doesn&#8217;t aim to recreate the exact same behavior. This aims to be a beautiful HTML5 visualization of the model that is configurable and performs well with as many boids as possible. The code is <a href='https://github.com/tech_no_crat/boids'>open-source</a> and hopefully, easy to read and tweak.</p>
+        <p>Note that this implementation is a little different from the <a href='http://www.red3d.com/cwr/boids/'>original model</a>, and doesn&#8217;t aim to recreate the exact same behavior. This aims to be an HTML5 visualization of the model that is configurable and performs well with as many boids as possible. The code is <a href='https://github.com/tech_no_crat/boids'>open-source</a> and hopefully, easy to read and tweak.</p>
         
         <h3 id='the_implementation'>The implementation</h3>
         
-        <p>It&#8217;s all written in <a href='http://coffeescript.org/'>coffeescript</a>, a beautiful little language that compiles into javascript. To improve performance, I used a kd-tree that allows for quick queries of the type &#8220;what are the K nearest points to point P&#8221;. ~~The kd-tree implementation is also written in coffeescript~~. The code is on <a href='https://github.com/tech_no_crat/boids'>github</a>.</p>
+        <p>It&#8217;s all written in <a href='http://coffeescript.org/'>coffeescript</a>, a language that compiles into javascript. To improve performance, I used a kd-tree for answering queries of the type &#8220;what are the K nearest points to point P&#8221;. The kd-tree implementation is also written in coffeescript. The code is on <a href='https://github.com/tech_no_crat/boids'>github</a>.</p>
         
         <h3 id='tweaking'>Tweaking</h3>
         
         <p>You can configure the simulation to some extend without touching the code or leaving your browser. Click on the option button to the right and you will be presented with certain configuration options that can significantly alter the boids&#8217; behavior. Here&#8217;s a more detailed explanation of the sliders:</p>
         
         <ul>
-        <li><strong>Number of boids</strong>: The number of boids on the screen. Decreasing this can obviously improve performance significantly.</li>
+        <li><strong>Number of boids</strong>: The number of boids on the screen. Decreasing this can improve performance significantly.</li>
         
-        <li><strong>Simulation speed</strong>: Increasing this value too much can result in decreased accuracy.</li>
+        <li><strong>Simulation speed</strong>: Increasing this value too much will result in decreased accuracy.</li>
         
-        <li><strong>Acceleration factor</strong>: How fast the boids can accelerate. Increasing this will make the boids behave more like fish.</li>
+        <li><strong>Acceleration factor</strong>: How fast the boids can accelerate. A high value will make the boids behave more like fish.</li>
         
         <li><strong>Flock size</strong>: The number of neighboors boids will consider to calculate the center of mass and flock velocity.</li>
         

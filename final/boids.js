@@ -1,5 +1,6 @@
 (function() {
-  var Boid;
+  var Boid,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   Boid = (function() {
 
@@ -19,17 +20,9 @@
   };
 
   this.Boids = (function() {
-    var averagePosition, avoidCollisions, boids, center, direction, distance, initialize, intervalHandle, lastRun, loopInterval, options, perceivedCenter, perceivedFlockVelocity, positionSum, randomUpTo, renderer, run, setBoidsCount, status, stayInBounds, time, totalPosition, totalVelocity, tree, update, velocitySum;
-
-    status = null;
+    var center, lastRun, loopInterval, options, randomUpTo, time, totalPosition, totalVelocity, tree;
 
     loopInterval = 20;
-
-    intervalHandle = null;
-
-    renderer = null;
-
-    boids = [];
 
     lastRun = null;
 
@@ -62,33 +55,35 @@
       return new Date().getTime();
     };
 
-    velocitySum = function() {
-      var b, sum, _i, _len;
+    Boids.prototype.velocitySum = function() {
+      var b, sum, _i, _len, _ref;
       sum = new Vector2;
-      for (_i = 0, _len = boids.length; _i < _len; _i++) {
-        b = boids[_i];
+      _ref = this.boids;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        b = _ref[_i];
         sum.add(b.velocity);
       }
       return sum;
     };
 
-    positionSum = function() {
-      var b, sum, _i, _len;
+    Boids.prototype.positionSum = function() {
+      var b, sum, _i, _len, _ref;
       sum = new Vector2;
-      for (_i = 0, _len = boids.length; _i < _len; _i++) {
-        b = boids[_i];
+      _ref = this.boids;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        b = _ref[_i];
         sum.add(b.position);
       }
       return sum;
     };
 
-    perceivedFlockVelocity = function(boid) {
+    Boids.prototype.perceivedFlockVelocity = function(boid) {
       var p, points, pos, sum, _i, _len;
       sum = new Vector2;
       points = tree.nearest({
         x: boid.position.x(),
         y: boid.position.y()
-      }, Math.min(boids.length, options['flockSize']));
+      }, Math.min(this.boids.length, options['flockSize']));
       for (_i = 0, _len = points.length; _i < _len; _i++) {
         p = points[_i];
         pos = new Vector2(p.x, p.y);
@@ -99,13 +94,13 @@
       return sum.scalarDivide(points.length - 1);
     };
 
-    perceivedCenter = function(boid) {
+    Boids.prototype.perceivedCenter = function(boid) {
       var p, points, pos, sum, _i, _len;
       sum = new Vector2;
       points = tree.nearest({
         x: boid.position.x(),
         y: boid.position.y()
-      }, Math.min(boids.length, options['flockSize']));
+      }, Math.min(this.boids.length, options['flockSize']));
       for (_i = 0, _len = points.length; _i < _len; _i++) {
         p = points[_i];
         pos = new Vector2(p.x, p.y);
@@ -116,42 +111,43 @@
       return sum.scalarDivide(points.length - 1);
     };
 
-    averagePosition = function() {
-      var b, sum, _i, _len;
+    Boids.prototype.averagePosition = function() {
+      var b, sum, _i, _len, _ref;
       sum = new Vector2;
-      for (_i = 0, _len = boids.length; _i < _len; _i++) {
-        b = boids[_i];
+      _ref = this.boids;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        b = _ref[_i];
         sum.add(b.position);
       }
-      sum.scalarDivide(boids.length);
+      sum.scalarDivide(this.boids.length);
       return sum;
     };
 
-    distance = function(a, b) {
+    Boids.prototype.distance = function(a, b) {
       return Math.sqrt(Math.pow(a.x() - b.x(), 2) + Math.pow(a.y() - b.y(), 2));
     };
 
-    avoidCollisions = function(boid) {
+    Boids.prototype.avoidCollisions = function(boid) {
       var b, dist, p, points, vel, _i, _len;
       vel = new Vector2;
       points = tree.nearest({
         x: boid.position.x(),
         y: boid.position.y()
-      }, Math.min(boids.length, options['flockSize']));
+      }, Math.min(this.boids.length, options['flockSize']));
       for (_i = 0, _len = points.length; _i < _len; _i++) {
         p = points[_i];
         b = new Vector2(p.x, p.y);
         if (b.x() !== boid.position.x() && b.y() !== boid.position.y()) {
-          dist = distance(b, boid.position);
+          dist = this.distance(b, boid.position);
           if (dist < options['minCollisionAvoidanceDistance']) {
-            vel.substract(direction(boid.position, b));
+            vel.substract(this.direction(boid.position, b));
           }
         }
       }
       return vel;
     };
 
-    stayInBounds = function(boid, lx, ly, hx, hy, p) {
+    Boids.prototype.stayInBounds = function(boid, lx, ly, hx, hy, p) {
       var vel;
       if (p == null) p = 2;
       vel = new Vector2;
@@ -162,61 +158,63 @@
       return vel;
     };
 
-    direction = function(from, to) {
+    Boids.prototype.direction = function(from, to) {
       var goal;
       goal = new Vector2(to.x(), to.y());
       return goal.substract(from);
     };
 
-    initialize = function() {
+    Boids.prototype.initialize = function() {
       lastRun = time();
-      boids = [];
-      return setBoidsCount(options['boidsNumber']);
+      this.boids = [];
+      return this.setBoidsCount(options['boidsNumber']);
     };
 
-    setBoidsCount = function(number) {
+    Boids.prototype.setBoidsCount = function(number) {
       var _results;
-      if (number === boids.length) return;
-      if (number > boids.length) {
-        while (number !== boids.length) {
-          boids.push(new Boid(randomUpTo(renderer.width()), randomUpTo(renderer.height())));
+      if (number === this.boids.length) return;
+      if (number > this.boids.length) {
+        while (number !== this.boids.length) {
+          this.boids.push(new Boid(randomUpTo(this.renderer.width()), randomUpTo(this.renderer.height())));
         }
       }
-      if (number < boids.length) {
+      if (number < this.boids.length) {
         _results = [];
-        while (number !== boids.length) {
-          _results.push(boids.pop());
+        while (number !== this.boids.length) {
+          _results.push(this.boids.pop());
         }
         return _results;
       }
     };
 
-    update = function(delta) {
-      var b, vel, _i, _j, _len, _len2, _results;
-      center = averagePosition();
-      totalPosition = positionSum();
-      totalVelocity = velocitySum();
-      tree = new KDTree(boids.map(function(b) {
+    Boids.prototype.update = function(delta) {
+      var b, vel, _i, _j, _len, _len2, _ref, _ref2, _results;
+      center = this.averagePosition();
+      totalPosition = this.positionSum();
+      totalVelocity = this.velocitySum();
+      tree = new KDTree(this.boids.map(function(b) {
         return {
           x: b.position.x(),
           y: b.position.y(),
           velocity: b.velocity
         };
       }));
-      for (_i = 0, _len = boids.length; _i < _len; _i++) {
-        b = boids[_i];
+      _ref = this.boids;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        b = _ref[_i];
         vel = new Vector2;
-        vel.add(direction(b.position, perceivedCenter(b)).scalarMultiply(options['perceivedCenterWeight']));
-        vel.add(avoidCollisions(b).scalarMultiply(options['collisionAvoidanceWeight']));
-        vel.add(perceivedFlockVelocity(b).scalarMultiply(options['perceivedVelocityWeight']));
-        vel.add(stayInBounds(b, 50, 50, renderer.width() - 50, renderer.height() - 50, options['stayInBoundsPower']).scalarMultiply(options['stayInBoundsWeight']));
+        vel.add(this.direction(b.position, this.perceivedCenter(b)).scalarMultiply(options['perceivedCenterWeight']));
+        vel.add(this.avoidCollisions(b).scalarMultiply(options['collisionAvoidanceWeight']));
+        vel.add(this.perceivedFlockVelocity(b).scalarMultiply(options['perceivedVelocityWeight']));
+        vel.add(this.stayInBounds(b, 50, 50, this.renderer.width() - 50, this.renderer.height() - 50, options['stayInBoundsPower']).scalarMultiply(options['stayInBoundsWeight']));
         vel.limit(1);
         b.velocity.add(vel.scalarMultiply(options['acceleration'] / 100));
         b.velocity.limit(1);
       }
+      _ref2 = this.boids;
       _results = [];
-      for (_j = 0, _len2 = boids.length; _j < _len2; _j++) {
-        b = boids[_j];
+      for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+        b = _ref2[_j];
         vel = b.velocity.clone();
         vel.scalarMultiply(delta / (20 - options['simulationSpeed'] + 1));
         _results.push(b.position.add(vel));
@@ -224,38 +222,38 @@
       return _results;
     };
 
-    run = function() {
+    Boids.prototype.run = function() {
       var delta;
       delta = time() - lastRun;
       lastRun = time();
-      setBoidsCount(options['boidsNumber']);
-      update(delta);
-      return renderer.render(boids, center);
+      this.setBoidsCount(options['boidsNumber']);
+      this.update(delta);
+      return this.renderer.render(this.boids, center);
     };
 
     function Boids(render_class) {
-      console.log("Initializing");
-      renderer = render_class;
-      status = "stopped";
+      this.run = __bind(this.run, this);      console.log("Initializing");
+      this.boids = [];
+      this.renderer = render_class;
+      this.status = "stopped";
     }
 
     Boids.prototype.start = function() {
-      console.log("Starting from status " + status);
-      if (status === "paused") lastRun = time();
-      if (status === "stopped") initialize();
-      intervalHandle = setInterval(run, loopInterval);
-      return status = "running";
+      if (this.status === "paused") lastRun = time();
+      if (this.status === "stopped") this.initialize();
+      this.intervalHandle = setInterval(this.run, loopInterval);
+      return this.status = "running";
     };
 
     Boids.prototype.pause = function() {
-      window.clearInterval(intervalHandle);
-      return status = "paused";
+      window.clearInterval(this.intervalHandle);
+      return this.status = "paused";
     };
 
     Boids.prototype.stop = function() {
-      window.clearInterval(intervalHandle);
-      renderer.clearScreen();
-      return status = "stopped";
+      window.clearInterval(this.intervalHandle);
+      this.renderer.clearScreen();
+      return this.status = "stopped";
     };
 
     Boids.prototype.get = function(option) {

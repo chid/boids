@@ -3,8 +3,8 @@
 
   $(document).ready(function() {
     window.renderer = new Boids2DRenderer($("canvas")[0]);
-    window.boids = new Boids(window.renderer);
-    window.boids.start();
+    window.simulator = new Boids(window.renderer);
+    window.simulator.start();
     displayOnButtonClick("#options-button", "#options", "#info");
     displayOnButtonClick("header", "#info", "#options");
     $("header").hover(function() {
@@ -13,15 +13,15 @@
       return $("#instruction").slideUp(500);
     });
     $("#play").click(function() {
-      window.boids.start();
+      window.simulator.start();
       return setActiveButton("play");
     });
     $("#pause").click(function() {
-      window.boids.pause();
+      window.simulator.pause();
       return setActiveButton("pause");
     });
     $("#stop").click(function() {
-      window.boids.stop();
+      window.simulator.stop();
       return setActiveButton("stop");
     });
     initializeCheckboxes();
@@ -67,7 +67,7 @@
     if (min == null) min = 0;
     if (max == null) max = 20;
     if (step == null) step = 1;
-    value = window.boids.get(option);
+    value = window.simulator.get(option);
     setOption(option, value);
     return {
       value: value,
@@ -81,7 +81,7 @@
   };
 
   setOption = function(option, value) {
-    window.boids.set(option, value);
+    window.simulator.set(option, value);
     $("#" + option + " > .value").html(value);
     if (value === 0) {
       return $("#" + option + " > .value").addClass('zero');
